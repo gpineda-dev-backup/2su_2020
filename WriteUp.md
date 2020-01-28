@@ -112,3 +112,22 @@ The patch consists in overwriting the `mov $0x0,%eax` into `mov $01,%eax`. In ot
 
 
 ## B- Questions
+
+- What are the possible attack paths on the signature of an embedded system ?
+> Compared with services such as servers, softwares, cloud ..., attackers could have access to the embedded system physically. 
+> For example he can retrieve the hard-codded signature (private/public) keys from the silica, he can use Man In the Middle in order to fake server authentication and read all the communication. 
+> Moreover due to low memory and energy consumption limits, used algorithm to cipher are not strong enough and random generators to seed initialisation vectors are often predictable. 
+
+- A quoi sert la chaine de confiance? Pourquoi est-elle nécessaire?
+- Décrire la méthode pour aborder la sécurité sur un produit embarqué. Pourquoi établir un modèle d'attaquant est-il important?
+> Produit/service ; Modèle de l'attaquant ; Flots d'information
+
+- Trouver un moyen rapide de faire du debug embarqué (par exemple sur cible ARM)? Expliquer les avantages
+> JTAG ; emulation ; qemu ...
+
+
+- Lister les catégories de bug possibles et comment les exploiter et les défendre
+> Buffers overflow ; 
+
+- Quelles idées pour améliorer la sécurité en embarqué? (IA, Anti-debug, Obfuscation, Crypto ...) Choisissez une idée, chercher si elle existe et développer en quelques phrases quel avantage elle apporte et ses limites
+> 
