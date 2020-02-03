@@ -118,12 +118,16 @@ The patch consists in overwriting the `mov $0x0,%eax` into `mov $01,%eax`. In ot
 > For example he can retrieve the hard-codded signature (private/public) keys from the silica, he can use Man In the Middle in order to fake server authentication and read all the communication. 
 > Moreover due to low memory and energy consumption limits, used algorithm to cipher are not strong enough and random generators to seed initialisation vectors are often predictable. 
 
-- A quoi sert la chaine de confiance? Pourquoi est-elle nécessaire?
-- Décrire la méthode pour aborder la sécurité sur un produit embarqué. Pourquoi établir un modèle d'attaquant est-il important?
-> Produit/service ; Modèle de l'attaquant ; Flots d'information
+- What is the chain of trust for? Why is it necessary?
+> Such a chain allows to target possible points of failure / attacks in the device process. As keystone, it is relevant to protect these points for example with Devops flow
+> (check source code weaknesses, build and dynamic tests), channels of communication medium (radio protection (short range transmission, frames ciphering, protocols...), protection of the third tiers (server, authentication)) and physical control (protect against physical hack, sniffing, ...).   
+> Anyway through an evaluation of risks and impacts, we can score the relevancy of such attack.   
+- Describe the method for approaching security on an embedded product. Why is establishing an attacker model important?
+> First identify if the solution is a product or a service, then establish the attacker model to adapt security with some counter-measures. An other point of failure is the data flow, indeed.
 
-- Trouver un moyen rapide de faire du debug embarqué (par exemple sur cible ARM)? Expliquer les avantages
-> JTAG ; emulation ; qemu ...
+- Find a quick way to do embedded debugging (for example on ARM target)? Explain the benefits
+> First it is more confortable for a dev to code on his computer (more tools, GUI, IDEs ..). At this time, using emulator such as qemu allow to compile and execute faslty without uploading the firmware on the device. Because of emulation, the computer has to do architecture translation (arm, x86, risc ..), making more slowly the execution than into real device.    
+> Moreover JTAG can be used for debugging directly while executing on embedded system, but pay attention to deactivate dev functions for the production stage.
 
 
 - Lister les catégories de bug possibles et comment les exploiter et les défendre
