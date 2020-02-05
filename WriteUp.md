@@ -130,8 +130,9 @@ The patch consists in overwriting the `mov $0x0,%eax` into `mov $01,%eax`. In ot
 > Moreover JTAG can be used for debugging directly while executing on embedded system, but pay attention to deactivate dev functions for the production stage.
 
 
-- Lister les catégories de bug possibles et comment les exploiter et les défendre
+- List possible bug categories and how to exploit and defend them
 > Buffers overflow ; 
 
-- Quelles idées pour améliorer la sécurité en embarqué? (IA, Anti-debug, Obfuscation, Crypto ...) Choisissez une idée, chercher si elle existe et développer en quelques phrases quel avantage elle apporte et ses limites
-> 
+- What ideas to improve on-board security? (AI, Anti-debug, Obfuscation, Crypto ...) Choose an idea, search if it exists and develop in a few sentences what advantage it brings and its limits exploit and defend them
+> Devops, industrial processing, remote debugging... https://github.com/aws/aws-fpga ; 
+>
