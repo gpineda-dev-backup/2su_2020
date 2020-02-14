@@ -320,3 +320,4 @@ pulseaudio: Reason: Invalid argument
 ```
 Unfortunately qemu stucks into black screen, In fact I suppose that it is due to a checksum issue. We should recalculate the CRC32 table after modifying our binary !
 
+
