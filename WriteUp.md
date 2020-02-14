@@ -207,4 +207,116 @@ By executing the last command with binwalk, a folder `__vmlinuz-qemu-arm-2.6.20-
 Here we can find : `_31B0.extracted/_E7E0.extracted`  and the image file : `/home/user/Téléchargements/_vmlinuz-qemu-arm-2.6.20-orinal-4.extracted/_31B0.extracted/_E7E0.extracted/cpio-root/usr/local/share/directfb-examples/tux.png`
 
 #### b) The hard way
-The idea is to walk into the firmware to identify offsets and extract content with `dd` 
+The idea is to walk into the firmware to identify offsets and extract content with `dd`.   
+
+```bash
+$ binwalk ./vmlinuz-qemu-arm-2.6.20-orinal 
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             Linux kernel ARM boot executable zImage (little-endian)
+12720         0x31B0          gzip compressed data, maximum compression, from Unix, last modified: 2007-05-09 06:03:48
+```
+
+Let's extract and unzip the gzip compressed data located at offset `0x31B0`.
+```
+$ dd if=vmlinuz-qemu-arm-2.6.20-orinal of=31B0.gz bs=1 skip=$((0x31B0))
+$ gunzip 31B0.gz
+
+$ binwalk 31B0
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+58971         0xE65B          LZMA compressed data, properties: 0xC0, dictionary size: 0 bytes, uncompressed size: 3223117372 bytes
+59360         0xE7E0          gzip compressed data, maximum compression, from Unix, last modified: 2007-05-09 06:02:29
+[...]
+2562660       0x271A64        CRC32 polynomial table, little endian
+[...]
+```
+
+Then, do the same with the compressed data located at offset `0xE7E0`
+```bash
+$ dd if=31B0 of=e7e0.gz skip=$((0xE7E0)) bs=1 count=$(( $((0x1C3F6B)) - $((0xE7E0)) +1  ))
+$ file e7e0.gz
+e7e0.gz: gzip compressed data, last modified: Wed May  9 06:02:29 2007, max compression, from Unix
+
+$ gunzip e7e0.gz
+$ file e7e0
+e7e0: ASCII cpio archive (SVR4 with no CRC)
+
+$ binwalk e7e0 
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+[..]
+2984412       0x2D89DC        ASCII cpio archive (SVR4 with no CRC), file name: "/usr/local/share/directfb-examples/tux.png", file name length: "0x0000002B", file size: "0x00006050"
+3009224       0x2DEAC8        ASCII cpio archive (SVR4 with no CRC), file name: "/usr/local/share/directfb-examples/wood_andi.jpg", file name length: "0x00000031", file size: "0x0000F327"
+[..]
+
+```
+
+To finish, we can extract the cpio archive
+
+```bash
+$ dd if=e7e0 of=tux-cpio bs=1 skip=$((0x2D89DC)) count=$(( $((0x2DEAC8 )) - $((0x2D89DC )) +1  ))
+$ file tux-cpio
+tux-cpio: ASCII cpio archive (SVR4 with no CRC)
+```
+
+And sync with our local fs:
+```bash
+$ cpio --make-directories -i -F tux-cpio
+$ gimp /usr/local/share/directfb-examples/tux.png
+```
+
+Here is the win !
+
+find . -iname *.c -print | cpio -ov >/tmp/c_files.cpio
+
+
+### 2- Repack our new Tux
+First, with cpio we recreate a well formated object (`H newc` for SVR4 without CRC format)
+```bash
+$ find /usr/local/share/directfb-examples/tux.png | cpio -o -H newc > ./ntux-cpio
+$ file ntux-cpio
+ntux-cpio: ASCII cpio archive (SVR4 with no CRC)
+```
+
+And replace in the main cpio archive at 0xe7e0 (patch and compress)
+
+```bash
+$ dd if=ntux-cpio of=e7e0 seek=$((0x2D89DC)) bs=1 conv=notrunc count=$(( $((0x2DEAC8 )) - $((0x2D89DC )) +1  ))
+$ gzip e7e0
+$ file e7e0.gz
+e7e0.gz: gzip compressed data, was "e7e0", last modified: Fri Feb 14 14:15:38 2020, from Unix
+```
+
+
+```bash
+$ dd if=e7e0.gz of=31B0 seek=$(( 0xe7e0 )) count=$(( $(( 0x1C3F6B )) - $(( 0xe7e0 )) )) bs=1
+$ gzip 31B0
+$ file 31B0.gz
+31B0.gz: gzip compressed data, was "31B0", last modified: Fri Feb 14 14:22:09 2020, from Unix
+```
+
+```bash
+$ dd if=31B0.gz of=vmlinuz-qemu-arm-2.6.20-hacked seek=$((0x31b0)) bs=1
+
+$ binwalk -e vmlinuz-qemu-arm-2.6.20-hacked 
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             Linux kernel ARM boot executable zImage (little-endian)
+12720         0x31B0          gzip compressed data, has original file name: "31B0", from Unix, last modified: 2020-02-14 14:22:09
+```
+
+Let's test out repacked firmware image...
+```bash
+$ qemu-system-arm -M versatilepb -m 16 -kernel vmlinuz-qemu-arm-2.6.20-hacked -append "clocksource=pit quiet rw"
+pulseaudio: set_sink_input_volume() failed
+pulseaudio: Reason: Invalid argument
+pulseaudio: set_sink_input_mute() failed
+pulseaudio: Reason: Invalid argument
+```
+Unfortunately qemu stucks into black screen, In fact I suppose that it is due to a checksum issue. We should recalculate the CRC32 table after modifying our binary !
+
