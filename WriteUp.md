@@ -97,7 +97,7 @@ The asm code provides indications about the code flow.
 
 Our goal is to return 1 on is_valid whatever the user's input. the returned value is prepared with `mov    $0x1,%eax` (move 1 into %eax) and `mov    $0x0,%eax`(move 0 into %eax => is_valid = 0). 
 
-
+https://unix.stackexchange.com/questions/214820/patching-a-binary-with-dd/214824
 
 #### iii) Patch
 
@@ -136,3 +136,75 @@ The patch consists in overwriting the `mov $0x0,%eax` into `mov $01,%eax`. In ot
 - What ideas to improve on-board security? (AI, Anti-debug, Obfuscation, Crypto ...) Choose an idea, search if it exists and develop in a few sentences what advantage it brings and its limits exploit and defend them
 > Devops, industrial processing, remote debugging... https://github.com/aws/aws-fpga ; 
 >
+
+## C- Where is tux ?
+
+### 0- Run the code
+After downloading the firmware image `vmlinuz-qemu-arm-2.6.20`, we can start it with Qemu (ARM arch)
+```bash
+$ qemu-system-arm -M versatilepb -m 16 -kernel vmlinuz-qemu-arm-2.6.20-orinal -append "clocksource=pit quiet rw"
+```
+
+Into the VM, pay attention to the `qwerty` keyboard to execute:
+```bash
+$ run_demo
+```
+
+Then, you will be tux everywhere in the foreground.
+
+### 1- Let's find where our friend is hidden ...
+By using `binwalk` tool, we can analyse the firmware content (-Me for recursive mode). We are looking for a png type, so the option `-dd "png image:png"` can help to filter results.
+
+```bash
+$ binwalk -MeD "png image:png" vmlinuz-qemu-arm-2.6.20-original
+
+Scan Time:     2020-02-14 12:42:22
+Target File:   /home/user/Téléchargements/vmlinuz-qemu-arm-2.6.20-orinal
+MD5 Checksum:  5c8a1c2f291db79915eb2fb0eda1ebbe
+Signatures:    396
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             Linux kernel ARM boot executable zImage (little-endian)
+12720         0x31B0          gzip compressed data, maximum compression, from Unix, last modified: 2007-05-09 06:03:48
+
+
+Scan Time:     2020-02-14 12:42:23
+Target File:   /home/user/Téléchargements/_vmlinuz-qemu-arm-2.6.20-orinal-4.extracted/31B0
+MD5 Checksum:  00f36d76c384709b0a6ca5cb93e25c0e
+Signatures:    396
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+58971         0xE65B          LZMA compressed data, properties: 0xC0, dictionary size: 0 bytes, uncompressed size: 3223117372 bytes
+59360         0xE7E0          gzip compressed data, maximum compression, from Unix, last modified: 2007-05-09 06:02:29
+1851243       0x1C3F6B        LZMA compressed data, properties: 0x64, dictionary size: 0 bytes, uncompressed size: 51539607552 bytes
+[..]
+2562660       0x271A64        CRC32 polynomial table, little endian
+
+[..]
+
+Scan Time:     2020-02-14 12:42:26
+Target File:   /home/user/Téléchargements/_vmlinuz-qemu-arm-2.6.20-orinal-4.extracted/_31B0.extracted/E7E0
+MD5 Checksum:  a87565b1913f211274dd18653451483c
+Signatures:    396
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+[..]
+2984412       0x2D89DC        ASCII cpio archive (SVR4 with no CRC), file name: "/usr/local/share/directfb-examples/tux.png", file name length: "0x0000002B", file size: "0x00006050"
+3009224       0x2DEAC8        ASCII cpio archive (SVR4 with no CRC), file name: "/usr/local/share/directfb-examples/wood_andi.jpg", file name length: "0x00000031", file size: "0x0000F327"
+
+
+[..]
+
+```
+
+Here we can see the path to our friend : `/usr/local/share/directfb-examples/tux.png` at offset `0x2D89DC` of the gzip content: `0xE7E0` 
+
+#### a) The noob way
+By executing the last command with binwalk, a folder `__vmlinuz-qemu-arm-2.6.20-orinal.extracted` has been created.    
+Here we can find : `_31B0.extracted/_E7E0.extracted`  and the image file : `/home/user/Téléchargements/_vmlinuz-qemu-arm-2.6.20-orinal-4.extracted/_31B0.extracted/_E7E0.extracted/cpio-root/usr/local/share/directfb-examples/tux.png`
+
+#### b) The hard way
+The idea is to walk into the firmware to identify offsets and extract content with `dd` 
