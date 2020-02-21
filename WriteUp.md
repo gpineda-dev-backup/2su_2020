@@ -140,7 +140,11 @@ The patch consists in overwriting the `mov $0x0,%eax` into `mov $01,%eax`. In ot
 
 - What ideas to improve on-board security? (AI, Anti-debug, Obfuscation, Crypto ...) Choose an idea, search if it exists and develop in a few sentences what advantage it brings and its limits exploit and defend them
 > Devops, industrial processing, remote debugging... https://github.com/aws/aws-fpga ; 
->
+> Because i'm interested in devops' processing, let's have a look at solutions to enhance iot security. The first step is to reduce bugs mainly thanks to log reporting and the key is centralisation. I think cloud's architecture could help to remotely debug devices and with OTA's updates (Over the Air) ensure security concerns fastly.
+> Let's focus on running tests for the iot ; indeed the use of cloud to build and compute on real devices most of the tests will reduce bugs and by the way security issues. 
+> As example I applied my last internship at equensWorldline with a team working on strong authentication for mobile solutions ; they use an opensource platform openstf to manage and deploy applications on remote Android devices. Using such a platform instead of emulators the observed behoviour is more faithful with the realworld.
+
+> Here let's me introduce yourself a similary solution for FPGAs (Field Programmable Gate Array) available from the Amazon Cloud platform where you can [rent instances](https://aws.amazon.com/fr/ec2/instance-types/f1/). Giving the opportunity to access such expensive devices to run tests should contribute to generalise good practices and enhance the chain of trust.
 
 ## C- Where is tux ?
 
