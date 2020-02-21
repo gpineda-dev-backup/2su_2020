@@ -281,7 +281,7 @@ $ gimp /usr/local/share/directfb-examples/tux.png
 Here is the win !
 
 find . -iname *.c -print | cpio -ov >/tmp/c_files.cpio
-
+![tux](src/tux.png)
 
 ### 2- Repack our new Tux
 First, with cpio we recreate a well formated object (`H newc` for SVR4 without CRC format)
