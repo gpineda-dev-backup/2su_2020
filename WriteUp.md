@@ -285,6 +285,7 @@ find . -iname *.c -print | cpio -ov >/tmp/c_files.cpio
 
 ### 2- Repack our new Tux
 First, with cpio we recreate a well formated object (`H newc` for SVR4 without CRC format)
+![ntux](src/ntux.png)
 ```bash
 $ find /usr/local/share/directfb-examples/tux.png | cpio -o -H newc > ./ntux-cpio
 $ file ntux-cpio
