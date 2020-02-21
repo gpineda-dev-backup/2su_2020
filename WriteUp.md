@@ -113,7 +113,7 @@ The patch consists in overwriting the `mov $0x0,%eax` into `mov $01,%eax`. In ot
 
 
 ### ls' turn
-> Have a look at disassembled /sbin/ls by Ghidra
+> Have a look at [disassembled /sbin/ls](src/TD01/disassembled_ls.c) by Ghidra 
 
 
 ## B- Questions
@@ -331,7 +331,13 @@ pulseaudio: Reason: Invalid argument
 Unfortunately qemu stucks into black screen, In fact I suppose that it is due to a checksum issue. We should recalculate the CRC32 table after modifying our binary !
 
 
-00100760
-00100760
+## D - Hack the heap
 
-0804848b
+
+## E - Fuzzing
+Let's reuse the code of the part A (Crack Emily) and design a script to rewrite (one bit a time) the binary in order to get a patched version (ie: OK whatever the input)
+### notes:
+Even if we apply such a script on the desired range ( `0x861-0x870` ), the number of possibilities is too important (at least 255^14 = 4,9154414350646441771130432128906e+33).   
+To conclude, a bruteforce approche will never end ! Maybe smarter system such as AI or genetic algorithms could help.
+
+## F - 
