@@ -434,3 +434,17 @@ Then, we can extract our publicKey from the certificate and private key:
 $ openssl rsa -in key.pem -pubout -out pubkey.pub
 ```
 
+Then calculate hash and sign it !
+```bash
+$ cat .\hello.txt
+Hey,
+This content is private and has to be protected against modifications by authentifying the writter !
+$ openssl dgst -sha256 hello.txt > hash
+$ cat .\hash
+SHA256(hello.txt)= 029ce541f200dee747778d646db55087fd09c190edfa36b98db17c6096745e1b
+$ openssl rsautl -sign -inkey key.pem -keyform PEM -in hash > signature
+$ cat .\signature
+¼D▀$
+Í░öÀ░ÆÉÂ6┤ÈÑ0&Â!¸j*Ïá¯ç6█À¦çspq─Ö×²Áyp═▓█Ä┼ü▄k:.ß¡╦┤ÚVþ┬µ//┤îæM█·┴]Á? ãöÃ¹$┌èê\Â©Ôw╬¥Çï®Ë¥·‗ª~Ç!àÐÎ'·QµÅ|█¶yt@%îK║!óRw÷5├LÔ░┤Ð┌b┌\G¡Të┌Æ$$ (,Ìñ®Ç╚S_Ù,┘ËCfþîè»├Û#ÈQ¨Ó¿±¬z©¨Ûãê}¸▓u¬fª1ÓÔÞ÷<¿╗▓®ÍðÿÝ,│fÐ@╝\D
+0       yÄ/æìz<¨└ù
+```
