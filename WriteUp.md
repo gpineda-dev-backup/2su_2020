@@ -431,7 +431,76 @@ Common Name (e.g. server FQDN or YOUR name) []:gpineda
 
 Then, we can extract our publicKey from the certificate and private key:
 ```bash
-$ openssl rsa -in key.pem -pubout -out pubkey.pub
+$ openssl x509 -in .\certificate.pem -noout -text
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            5a:c1:2c:3d:f8:50:e4:f0:45:e4:cf:61:5e:ad:f8:b5:c7:09:8a:90
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C = FR, ST = Centre Val de Loire, L = Bourges, O = Institut National des Sciences Appliqu\C2\82es, OU = 2su, CN = gpineda, emailAddress = guillaume.pineda@insa-cvl.fr
+        Validity
+            Not Before: Feb 21 18:08:24 2020 GMT
+            Not After : Feb 20 18:08:24 2021 GMT
+        Subject: C = FR, ST = Centre Val de Loire, L = Bourges, O = Institut National des Sciences Appliqu\C2\82es, OU = 2su, CN = gpineda, emailAddress = guillaume.pineda@insa-cvl.fr
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+                Modulus:
+                    00:cc:9f:fc:da:9c:26:01:39:66:48:75:0b:b3:45:
+                    9d:66:c1:c1:b0:c8:08:8c:ec:d0:8d:0e:39:0b:3f:
+                    1e:ba:9f:a6:8e:ea:33:1c:3c:15:f9:06:b6:29:55:
+                    dd:43:99:17:b5:35:24:34:76:53:8f:e3:a2:ed:ad:
+                    81:1f:f7:99:7c:82:0b:8f:94:b5:d3:30:6f:83:bc:
+                    ba:2e:30:81:f0:01:ce:6f:3a:ab:b8:e5:87:ef:e7:
+                    cc:de:08:83:f2:28:7b:c5:97:33:d8:cb:45:b8:9a:
+                    67:d5:4f:eb:51:9f:ee:a4:3e:4f:3e:40:e1:5f:a4:
+                    07:fd:b7:ac:d1:1e:3f:19:5a:63:e6:21:35:11:78:
+                    68:37:00:d9:41:ea:16:f7:c4:5e:c6:f0:87:b8:6c:
+                    f8:27:34:15:09:75:cd:db:06:f7:49:29:59:b7:ff:
+                    18:22:4b:5a:90:cb:5f:f5:77:97:db:bb:56:97:2d:
+                    c5:ee:79:30:5c:3d:17:ac:a4:ca:9b:03:d2:d4:54:
+                    4f:00:c5:1f:db:53:07:92:cd:9f:da:43:90:7d:b6:
+                    76:df:d8:da:d6:ad:5a:a2:61:e9:60:4a:19:29:25:
+                    02:42:d2:af:43:59:01:43:a7:6c:bc:03:59:0a:95:
+                    9e:fd:d5:0b:e5:d4:40:9f:e9:5e:da:78:3e:4a:d3:
+                    52:2d
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Subject Key Identifier:
+                98:79:7F:C3:4A:46:0C:4C:72:8C:C2:E6:4A:A6:F3:B9:FB:CA:FC:17
+            X509v3 Authority Key Identifier:
+                keyid:98:79:7F:C3:4A:46:0C:4C:72:8C:C2:E6:4A:A6:F3:B9:FB:CA:FC:17
+
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+    Signature Algorithm: sha256WithRSAEncryption
+         88:85:34:57:cd:38:fc:34:d2:e3:dc:f0:20:46:49:9e:08:fb:
+         be:10:43:40:d0:22:a5:96:2f:4b:2f:d0:00:ee:e7:83:91:e3:
+         8a:3b:46:92:3b:61:1c:df:1c:3f:6c:29:8f:65:7b:af:bc:8d:
+         23:2f:fc:a0:8b:87:15:26:71:82:4a:53:28:9e:48:91:fb:d8:
+         74:ca:9f:03:8e:64:11:bd:f9:76:40:54:96:49:2a:5f:38:5c:
+         b9:dd:9d:bb:d7:96:23:e1:a5:19:0f:02:19:c3:84:49:97:ad:
+         42:43:a2:ac:46:3e:f9:ee:a9:80:3f:69:3e:b2:d6:2b:bb:0b:
+         59:22:11:fa:37:54:c6:e2:95:a0:d1:0d:62:23:9f:eb:c2:3e:
+         4e:0d:89:ee:82:0b:54:8e:6b:bd:fd:77:52:2f:ad:00:a1:81:
+         17:ff:05:df:73:c9:12:fa:61:b3:a4:b7:7f:cd:94:04:00:ae:
+         75:5c:e8:f2:7d:7c:6b:c7:6d:d2:bd:b3:3a:82:73:97:a3:08:
+         5b:4f:d1:3d:f8:49:6e:30:54:99:dd:67:a2:91:1d:58:3c:30:
+         f2:73:1f:af:5f:75:2a:98:88:2a:92:7a:74:93:33:8a:d4:5a:
+         fb:fc:78:a5:23:1d:59:18:93:4e:9c:e6:a7:47:60:42:6b:4d:
+         7d:ce:f6:89
+$ openssl x509 -pubkey -noout -in .\certificate.pem  > pubkey.pem
+$ cat .\pubkey.pem
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzJ/82pwmATlmSHULs0Wd
+ZsHBsMgIjOzQjQ45Cz8eup+mjuozHDwV+Qa2KVXdQ5kXtTUkNHZTj+Oi7a2BH/eZ
+fIILj5S10zBvg7y6LjCB8AHObzqruOWH7+fM3giD8ih7xZcz2MtFuJpn1U/rUZ/u
+pD5PPkDhX6QH/bes0R4/GVpj5iE1EXhoNwDZQeoW98RexvCHuGz4JzQVCXXN2wb3
+SSlZt/8YIktakMtf9XeX27tWly3F7nkwXD0XrKTKmwPS1FRPAMUf21MHks2f2kOQ
+fbZ239ja1q1aomHpYEoZKSUCQtKvQ1kBQ6dsvANZCpWe/dUL5dRAn+le2ng+StNS
+LQIDAQAB
+-----END PUBLIC KEY-----
 ```
 
 Then calculate hash and sign it !
