@@ -517,3 +517,7 @@ $ cat .\signature
 Í░öÀ░ÆÉÂ6┤ÈÑ0&Â!¸j*Ïá¯ç6█À¦çspq─Ö×²Áyp═▓█Ä┼ü▄k:.ß¡╦┤ÚVþ┬µ//┤îæM█·┴]Á? ãöÃ¹$┌èê\Â©Ôw╬¥Çï®Ë¥·‗ª~Ç!àÐÎ'·QµÅ|█¶yt@%îK║!óRw÷5├LÔ░┤Ð┌b┌\G¡Të┌Æ$$ (,Ìñ®Ç╚S_Ù,┘ËCfþîè»├Û#ÈQ¨Ó¿±¬z©¨Ûãê}¸▓u¬fª1ÓÔÞ÷<¿╗▓®ÍðÿÝ,│fÐ@╝\D
 0       yÄ/æìz<¨└ù
 ```
+-- to be continued --
+
+### use case
+Signing a binary could help to ensure an update integrity by storing the certificate securely into the device and signing updates with the company's private key. However a man in the middle is possible and to avoid it a shared challenge could be solved (like Diffie Hellman)
