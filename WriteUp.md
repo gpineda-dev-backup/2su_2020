@@ -406,4 +406,31 @@ Even if we apply such a script on the desired range ( `0x861-0x870` ), the numbe
 To conclude, a bruteforce approche will never end ! Maybe smarter system such as AI or genetic algorithms could help.
 
 ## F - Sign binaries
+Get starting by the generation of our self-signed certificate.
+```bash
+$ openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
+Generating a RSA private key
+.........................................+++++
+........................................................+++++
+writing new private key to 'key.pem'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:FR
+State or Province Name (full name) [Some-State]:Centre Val de Loire
+Locality Name (eg, city) []:Bourges
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:Institut National des Sciences Appliquées
+Organizational Unit Name (eg, section) []:2su
+Common Name (e.g. server FQDN or YOUR name) []:gpineda
+```
+
+Then, we can extract our publicKey from the certificate and private key:
+```bash
+$ openssl rsa -in key.pem -pubout -out pubkey.pub
+```
 
